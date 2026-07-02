@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <%- include('../partials/head'); %>
+</head>
+
+<body class="container">
+
+    <header>
+        <%- include('../partials/header'); %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+
+            <h1>Clientes</h1>
+
+            <div class="mb-3">
+                <a href="/api/v1/formulario" class="btn btn-success">
+                    Registrar Usuario
+                </a>
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Telefono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <% usuarios.forEach(function(usuario) { %>
+
+                        <tr>
+                            <td><%= usuario.nombre %></td>
+                            <td><%= usuario.email %></td>
+                            <td><%= usuario.telefono %></td>
+
+                            <td>
+
+                                <button type="button"
+                                    class="btn btn-info"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalVer"
+                                    onclick="modalVer('<%= usuario.nombre %>','<%= usuario.email %>','<%= usuario.telefono %>')">
+                                    Ver detalle
+                                </button>
+
+                                <button type="button"
+                                    class="btn btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditar"
+                                    onclick="modalEditar('<%= usuario.nombre %>','<%= usuario.email %>','<%= usuario.telefono %>')">
+                                    Editar
+                                </button>
+
+                                <form action="/api/v1/usuarios/eliminar/<%= usuario.email %>"
+                                      method="POST"
+                                      style="display:inline;">
+
+                                    <button class="btn btn-danger"
+                                            onclick="return confirm('¿Eliminar usuario?')">
+                                        Eliminar
+                                    </button>
+
+                                </form>
+
+                            </td>
+                        </tr>
+
+                    <% }); %>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </main>
+
+    <!-- MODAL VER -->
+
+    <div class="modal fade" id="modalVer" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Detalle del usuario</h4>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Nombre</label>
+                        <input type="text"
+                            id="nombreV"
+                            class="form-control"
+                            readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Email</label>
+                        <input type="email"
+                            id="emailV"
+                            class="form-control"
+                            readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Telefono</label>
+                        <input type="text"
+                            id="telV"
+                            class="form-control"
+                            readonly>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR -->
+
+    <div class="modal fade" id="modalEditar" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Editar usuario</h4>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="formEditar" method="POST">
+
+                        <div class="mb-3">
+                            <label>Nombre</label>
+                            <input type="text"
+                                id="nombreE"
+                                name="nombre"
+                                class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email"
+                                id="emailE"
+                                name="email"
+                                class="form-control"
+                                readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Telefono</label>
+                            <input type="text"
+                                id="telE"
+                                name="telefono"
+                                class="form-control">
+                        </div>
+
+                        <button type="submit"
+                            class="btn btn-primary">
+                            Guardar Cambios
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <%- include('../partials/footer'); %>
+    </footer>
+
+    <script>
+
+        function modalVer(nombre, email, telefono) {
+
+            document.getElementById('nombreV').value = nombre;
+            document.getElementById('emailV').value = email;
+            document.getElementById('telV').value = telefono;
+
+        }
+
+        function modalEditar(nombre, email, telefono) {
+
+            document.getElementById('nombreE').value = nombre;
+            document.getElementById('emailE').value = email;
+            document.getElementById('telE').value = telefono;
+
+            document.getElementById('formEditar').action =
+                '/api/v1/clientes/editar/' + email;
+
+        }
+
+    </script>
+
+</body>
+
+</html>
