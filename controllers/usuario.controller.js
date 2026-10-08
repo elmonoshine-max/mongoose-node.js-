@@ -1,5 +1,6 @@
 const modeloCliente = require('../models/cliente.model');
 const usuarioModel = require('../models/usuario.model');
+const jwt = require('jsonwebtoken');
 
 exports.home = (req, res) => {
     res.render('pages/index', {
@@ -107,4 +108,55 @@ exports.eliminar = async (req, res) => {
 
     }
 
+};
+
+
+
+
+exports.login = async (req, res) => {
+
+    try {
+
+        const { email, password } = req.body;
+
+        const usuario = await usuarioModel.findOne({
+            email: email
+        });
+
+        if (!usuario) {
+            return res.status(401).json({
+                mensaje: 'Correo o contraseña incorrectos'
+            });
+        }
+
+        if (usuario.password !== password) {
+            return res.status(401).json({
+                mensaje: 'Correo o contraseña incorrectos'
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                id: usuario._id,
+                email: usuario.email,
+                rol: usuario.rol
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '1h'
+            }
+        );
+
+        res.json({
+            mensaje: 'Login correcto',
+            token: token
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            error: error.message
+        });
+
+    }
 };
